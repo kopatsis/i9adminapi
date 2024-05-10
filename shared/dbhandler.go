@@ -35,7 +35,7 @@ func ConnectDB() (*mongo.Client, *mongo.Database, error) {
 		return nil, nil, err
 	}
 
-	database := client.Database("i9")
+	database := client.Database("i9email")
 
 	return client, database, nil
 }

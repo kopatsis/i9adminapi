@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"i9-adminapi/platform"
 	"i9-adminapi/shared"
 	"log"
@@ -17,8 +16,6 @@ func main() {
 			log.Fatalf("Failed to load the env vars: %v", err)
 		}
 	}
-
-	fmt.Print("igh")
 
 	client, database, err := shared.ConnectDB()
 	if err != nil {

@@ -1,13 +1,17 @@
 package main
 
 import (
+	"context"
+	"encoding/base64"
 	"i9-adminapi/platform"
 	"i9-adminapi/shared"
 	"log"
 	"net/http"
 	"os"
 
+	firebase "firebase.google.com/go"
 	"github.com/joho/godotenv"
+	"google.golang.org/api/option"
 )
 
 func main() {
@@ -23,7 +27,23 @@ func main() {
 	}
 	defer shared.DisConnectDB(client)
 
-	rtr := platform.New(database)
+	firebaseConfigBase64 := os.Getenv("FIREBASE_CONFIG_BASE64")
+	if firebaseConfigBase64 == "" {
+		log.Fatal("FIREBASE_CONFIG_BASE64 environment variable is not set.")
+	}
+
+	configJSON, err := base64.StdEncoding.DecodeString(firebaseConfigBase64)
+	if err != nil {
+		log.Fatalf("Error decoding FIREBASE_CONFIG_BASE64: %v", err)
+	}
+
+	sa := option.WithCredentialsJSON(configJSON)
+	firebase, err := firebase.NewApp(context.Background(), nil, sa)
+	if err != nil {
+		log.Fatalf("error initializing app: %v\n", err)
+	}
+
+	rtr := platform.New(database, firebase)
 
 	port := os.Getenv("PORT")
 	if port == "" {
